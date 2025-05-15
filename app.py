@@ -37,11 +37,16 @@ st.markdown(
         margin-bottom: 1rem;
         text-shadow: 0 0 24px #00ccff, 3px 3px 6px #000d1a;
         filter: drop-shadow(0 0 12px #00ccff);
-        animation: floatTitle 3s ease-in-out infinite alternate;
+        animation: floatTitle 3s ease-in-out infinite alternate, glowPulse 2s ease-in-out infinite;
     }
     @keyframes floatTitle {
-        0% { transform: translateY(0px);}
-        100% { transform: translateY(-10px);}
+        0% { transform: translateY(0px) rotate(-1deg);}
+        100% { transform: translateY(-10px) rotate(1deg);}
+    }
+    @keyframes glowPulse {
+        0% { text-shadow: 0 0 24px #00ccff, 3px 3px 6px #000d1a; }
+        50% { text-shadow: 0 0 36px #00ccff, 4px 4px 8px #000d1a; }
+        100% { text-shadow: 0 0 24px #00ccff, 3px 3px 6px #000d1a; }
     }
     .subtitle {
         font-size: 1.8rem;
@@ -50,6 +55,11 @@ st.markdown(
         margin-bottom: 2rem;
         font-style: italic;
         text-shadow: 0 0 12px #66d9ff;
+        animation: subtitleFloat 4s ease-in-out infinite alternate;
+    }
+    @keyframes subtitleFloat {
+        0% { transform: translateY(0) scale(1); opacity: 0.8; }
+        100% { transform: translateY(-5px) scale(1.02); opacity: 1; }
     }
     .form-title {
         font-size: 1.5rem;
@@ -59,6 +69,12 @@ st.markdown(
         text-align: center;
         letter-spacing: 1px;
         text-shadow: 1px 1px 8px #00ccff;
+        animation: formTitlePulse 2s ease-in-out infinite;
+    }
+    @keyframes formTitlePulse {
+        0% { letter-spacing: 1px; }
+        50% { letter-spacing: 2px; }
+        100% { letter-spacing: 1px; }
     }
     .glass-box {
         background: rgba(0, 38, 77, 0.55);
@@ -69,10 +85,22 @@ st.markdown(
         border: 2px solid rgba(0, 204, 255, 0.25);
         padding: 28px;
         margin-bottom: 28px;
-        transition: box-shadow 0.3s;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: glassBoxAppear 0.6s ease-out;
+    }
+    @keyframes glassBoxAppear {
+        from { 
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
     .glass-box:hover {
         box-shadow: 0 12px 48px 0 #00ccff55, 0 2px 12px 0 #001a33;
+        transform: translateY(-5px) scale(1.01);
     }
     .chat-container {
         background: rgba(0, 38, 77, 0.8);
@@ -85,6 +113,17 @@ st.markdown(
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         border: 2px solid #00ccff33;
+        animation: chatContainerAppear 0.5s ease-out;
+    }
+    @keyframes chatContainerAppear {
+        from { 
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to { 
+            opacity: 1;
+            transform: scale(1);
+        }
     }
     .chat-message {
         margin: 16px 0;
@@ -93,29 +132,56 @@ st.markdown(
         font-size: 1.12rem;
         line-height: 1.7;
         box-shadow: 0 2px 16px 0 #000d1a33, 0 0.5px 4px 0 #00ccff33;
-        transition: background 0.2s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         display: flex;
         align-items: center;
         gap: 12px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        animation: messageSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes messageSlideIn {
+        from { 
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
     .user-message {
         background: linear-gradient(120deg, #003366 80%, #00ccff22 100%);
         margin-left: 16%;
-        border: 2px solid #00ccff;
+        border: 3px solid;
+        border-image: linear-gradient(90deg, #00ccff, #003366) 1;
         text-align: right;
         color: #e6ffff;
         box-shadow: 0 0 12px #00ccff44;
         justify-content: flex-end;
+        animation: userMessageGlow 2s linear infinite alternate;
     }
     .bot-message {
         background: linear-gradient(120deg, #004080 80%, #66d9ff22 100%);
         margin-right: 16%;
-        border: 2px solid #66d9ff;
+        border: 3px solid;
+        border-image: linear-gradient(90deg, #66d9ff, #004080) 1;
         text-align: left;
         color: #ffffff;
         box-shadow: 0 0 12px #66d9ff44;
         justify-content: flex-start;
+        animation: botMessageGlow 2s linear infinite alternate;
+    }
+    @keyframes userMessageGlow {
+        0% { box-shadow: 0 0 12px #00ccff44, 0 0 0px #00ccff; }
+        50% { box-shadow: 0 0 24px #00ccff88, 0 0 8px #00ccff; }
+        100% { box-shadow: 0 0 12px #00ccff44, 0 0 0px #00ccff; }
+    }
+    @keyframes botMessageGlow {
+        0% { box-shadow: 0 0 12px #66d9ff44, 0 0 0px #66d9ff; }
+        50% { box-shadow: 0 0 24px #66d9ff88, 0 0 8px #66d9ff; }
+        100% { box-shadow: 0 0 12px #66d9ff44, 0 0 0px #66d9ff; }
     }
     .chat-avatar {
         width: 36px;
@@ -130,18 +196,38 @@ st.markdown(
         box-shadow: 0 0 8px #00ccff88;
         margin-right: 8px;
         margin-left: 8px;
+        animation: avatarFloat 2.5s ease-in-out infinite alternate, avatarPulse 2s ease-in-out infinite;
+    }
+    @keyframes avatarFloat {
+        0% { transform: translateY(0px) rotate(0deg); }
+        100% { transform: translateY(-6px) rotate(5deg); }
+    }
+    @keyframes avatarPulse {
+        0% { box-shadow: 0 0 8px #00ccff88; }
+        50% { box-shadow: 0 0 16px #00ccffaa; }
+        100% { box-shadow: 0 0 8px #00ccff88; }
     }
     .user-message .chat-avatar {
         background: #003366;
         color: #00ccff;
         margin-left: 8px;
         margin-right: 0;
+        animation: userAvatarFloat 2.5s ease-in-out infinite alternate;
     }
     .bot-message .chat-avatar {
         background: #00ccff;
         color: #003366;
         margin-right: 8px;
         margin-left: 0;
+        animation: botAvatarFloat 2.5s ease-in-out infinite alternate;
+    }
+    @keyframes userAvatarFloat {
+        0% { transform: translateY(0px) rotate(0deg); }
+        100% { transform: translateY(-6px) rotate(-5deg); }
+    }
+    @keyframes botAvatarFloat {
+        0% { transform: translateY(0px) rotate(0deg); }
+        100% { transform: translateY(-6px) rotate(5deg); }
     }
     .chat-input-row {
         display: flex;
@@ -149,6 +235,17 @@ st.markdown(
         gap: 14px;
         margin-top: 22px;
         margin-bottom: 12px;
+        animation: inputRowAppear 0.4s ease-out;
+    }
+    @keyframes inputRowAppear {
+        from { 
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     .stTextInput>div>input {
         background-color: #00264d;
@@ -158,11 +255,13 @@ st.markdown(
         padding: 16px;
         font-size: 1.15rem;
         box-shadow: 0 2px 12px 0 #000d1a33;
-        transition: border 0.2s, background 0.2s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .stTextInput>div>input:focus {
         border: 2.5px solid #00ccff;
         background-color: #003366;
+        transform: scale(1.02);
+        box-shadow: 0 4px 16px 0 #00ccff44;
     }
     .stButton>button {
         background: linear-gradient(90deg, #00ccff 60%, #003366 100%);
@@ -173,15 +272,37 @@ st.markdown(
         padding: 16px 36px;
         border: none;
         box-shadow: 2px 2px 12px #000d1a;
-        transition: background 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         outline: none;
         text-shadow: 0 0 8px #00ccff88;
+        position: relative;
+        overflow: hidden;
+    }
+    .stButton>button:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(0,204,255,0.2);
+        border-radius: 100%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s, height 0.3s;
+        z-index: 0;
+    }
+    .stButton>button:hover:after {
+        width: 200%;
+        height: 500%;
     }
     .stButton>button:hover {
         background: linear-gradient(90deg, #003366 60%, #00ccff 100%);
         color: #e6ffff;
-        transform: scale(1.07);
+        transform: scale(1.07) translateY(-2px);
         box-shadow: 0 0 24px #00ccffcc;
+    }
+    .stButton>button:active {
+        transform: scale(0.98) translateY(1px);
     }
     .divider {
         border: none;
@@ -190,6 +311,17 @@ st.markdown(
         margin: 36px 0 28px 0;
         border-radius: 2px;
         opacity: 0.8;
+        animation: shimmer 2.5s linear infinite, dividerPulse 3s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+        0% { filter: brightness(1); }
+        50% { filter: brightness(1.5); }
+        100% { filter: brightness(1); }
+    }
+    @keyframes dividerPulse {
+        0% { transform: scaleX(1); }
+        50% { transform: scaleX(1.02); }
+        100% { transform: scaleX(1); }
     }
     label {
         color: #fff !important;
@@ -197,6 +329,12 @@ st.markdown(
         font-weight: bold;
         letter-spacing: 0.5px;
         text-shadow: 0 0 8px #fff, 0 0 2px #00ccff;
+        animation: labelPulse 2s ease-in-out infinite;
+    }
+    @keyframes labelPulse {
+        0% { text-shadow: 0 0 8px #fff, 0 0 2px #00ccff; }
+        50% { text-shadow: 0 0 12px #fff, 0 0 4px #00ccff; }
+        100% { text-shadow: 0 0 8px #fff, 0 0 2px #00ccff; }
     }
     </style>
     """,
