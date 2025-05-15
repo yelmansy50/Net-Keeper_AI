@@ -169,11 +169,40 @@ http://localhost:8501
 - Error handling and protection
 - Fallback responses for system unavailability
 
-## 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 📊 Visualizations & Results
 
-## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+NetKeeper provides insightful visualizations and output images to help users understand network traffic and prediction results. Here are some example outputs:
+
+<p align="center">
+  <img src="notebook/op1.jpg" alt="Output Example 1" width="350"/>
+  <img src="notebook/op2.jpg" alt="Output Example 2" width="350"/>
+</p>
+<p align="center">
+  <img src="notebook/op3.jpg" alt="Output Example 3" width="350"/>
+  <img src="notebook/op4.jpg" alt="Output Example 4" width="350"/>
+</p>
+
+---
+
+## 🚀 App Preview
+
+Below is a preview of the NetKeeper web application interface:
+
+<p align="center">
+  <img src="notebook/knet.jpg" alt="NetKeeper App Preview" width="350"/>
+</p>
+
+<p align="center">
+  <img src="notebook/logo%20prj.jpg" alt="NetKeeper Logo" width="200"/>
+</p>
+
+---
+
+## 🚀 Deployment
+
+This project is deployed on **Microsoft Azure** using **Azure App Service** and automated with **GitHub Actions** for CI/CD. The deployment workflow ensures that every push to the main branch is automatically built, tested, and deployed to the cloud, providing a seamless and reliable update process.
+
+---
 
 ## 👥 Authors
 - Mohamed Elmesery - Initial work
