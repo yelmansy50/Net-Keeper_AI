@@ -8,6 +8,6 @@ dill
 xgboost
 Flask
 streamlit
-gTTS
+gtts
 python-dotenv
 -e .

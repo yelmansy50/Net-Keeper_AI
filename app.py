@@ -499,7 +499,13 @@ attack_explanations = {
             "How it works": "• Attacker sends crafted CDP packets\n• Exploits the information-sharing nature of CDP\n• Can reveal network topology and device details",
             "Impact": "• Network mapping exposure\n• Potential for targeted attacks\n• Security policy compromise",
             "Real-world example": "Attackers can use CDP information to identify critical network devices and plan more sophisticated attacks."
-        }
+        },
+        "prevention": [
+            "Disable unused CDP services on all network devices.",
+            "Segment your network and limit CDP to trusted interfaces only.",
+            "Regularly audit Layer 2 configurations.",
+            "Use secure management protocols like SSH instead of CDP-based discovery."
+        ]
     },
     "OSPF Attack": {
         "description": "OSPF (Open Shortest Path First) attacks target the routing protocol to manipulate routing tables. Attackers can inject false routes or disrupt network communication by sending malicious OSPF packets.",
@@ -507,7 +513,13 @@ attack_explanations = {
             "How it works": "• Attacker injects malicious OSPF packets\n• Manipulates routing tables\n• Can redirect traffic through attacker-controlled paths",
             "Impact": "• Traffic redirection\n• Network instability\n• Potential data interception",
             "Real-world example": "Attackers can force traffic through their systems by advertising false routes with better metrics."
-        }
+        },
+        "prevention": [
+            "Use MD5 or SHA authentication for OSPF messages.",
+            "Implement passive interfaces where routing updates are not needed.",
+            "Monitor routing tables for sudden or suspicious changes.",
+            "Use route filtering and summarization to control routing updates."
+        ]
     },
     "ICMP Attack": {
         "description": "ICMP (Internet Control Message Protocol) attacks involve flooding a network with ICMP packets, causing network congestion and potential denial of service. Common examples include ping floods and ICMP redirect attacks.",
@@ -515,7 +527,13 @@ attack_explanations = {
             "How it works": "• Floods network with ICMP packets\n• Overwhelms network resources\n• Can cause service disruption",
             "Impact": "• Network congestion\n• Service unavailability\n• Resource exhaustion",
             "Real-world example": "Ping floods can overwhelm servers and network devices, causing them to become unresponsive."
-        }
+        },
+        "prevention": [
+            "Restrict ICMP traffic using firewall rules.",
+            "Limit ICMP rate using router access control lists (ACLs).",
+            "Monitor for ICMP floods or ping sweeps using IDS.",
+            "Disable ICMP redirect messages on gateways."
+        ]
     },
     "DHCP Attack": {
         "description": "DHCP (Dynamic Host Configuration Protocol) attacks involve rogue DHCP servers or DHCP starvation. Attackers can assign malicious IP configurations or exhaust the DHCP pool, preventing legitimate devices from getting IP addresses.",
@@ -523,7 +541,13 @@ attack_explanations = {
             "How it works": "• Rogue DHCP server deployment\n• DHCP pool exhaustion\n• Malicious IP configuration assignment",
             "Impact": "• Network access issues\n• Man-in-the-middle potential\n• Service disruption",
             "Real-world example": "Attackers can set up rogue DHCP servers to assign malicious DNS servers to clients."
-        }
+        },
+        "prevention": [
+            "Enable DHCP snooping on switches to filter rogue servers.",
+            "Use port security to limit MAC addresses per port.",
+            "Configure trusted ports only for legitimate DHCP servers.",
+            "Monitor logs for multiple DHCP OFFER messages."
+        ]
     },
     "MAC Flood Attack": {
         "description": "MAC flooding is a network attack where an attacker floods a switch with fake MAC addresses, causing the switch's MAC address table to overflow. This can lead to the switch behaving like a hub, allowing the attacker to see all network traffic.",
@@ -531,144 +555,15 @@ attack_explanations = {
             "How it works": "• Floods switch with fake MAC addresses\n• Overflows MAC address table\n• Forces switch into hub mode",
             "Impact": "• Traffic visibility to attacker\n• Network performance degradation\n• Potential data exposure",
             "Real-world example": "Attackers can capture sensitive data by forcing switches to broadcast all traffic."
-        }
+        },
+        "prevention": [
+            "Enable port security to restrict dynamic MAC addresses.",
+            "Limit the number of MAC addresses per interface.",
+            "Use dynamic ARP inspection to validate MAC-IP mappings.",
+            "Deploy IDS/IPS to detect abnormal MAC behavior."
+        ]
     }
 }
-
-# Initialize session state for chat history
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
-
-# Add a key counter to session state
-if 'chat_input_key' not in st.session_state:
-    st.session_state.chat_input_key = 0
-
-# Function to get chatbot response
-def get_chatbot_response(message, prediction_result=None):
-    gratitude_responses = [
-        "you're welcome!",
-        "Glad to help you.",
-        "Anytime! Feel free to ask more questions!"
-    ]
-    
-    if prediction_result:
-        if prediction_result in attack_info_dict:
-            label, tips, _ = attack_info_dict[prediction_result]
-            if tips:
-                return f"Based on the prediction of {label}, here are some tips to protect your network:\n" + "\n".join([f"• {tip}" for tip in tips])
-            else:
-                return f"Great news! The prediction shows {label}. No specific protection measures are needed."
-        else:
-            return "I'm not sure about this prediction type. Please consult with a network security expert."
-    else:
-        msg = message.lower()
-        if any(word in msg for word in ["thank you", "thanks", "thx", "appreciate"]):
-            import random
-            return random.choice(gratitude_responses)
-        if "hello" in msg or "hi" in msg:
-            return "Hello! I'm your network security assistant. How can I help you today?"
-        elif "help" in msg:
-            return "I can help you understand network security predictions and provide tips for protection. Just ask me about specific attack types or general security advice."
-        elif "explain" in msg:
-            for attack_name in attack_explanations.keys():
-                if attack_name.lower() in msg:
-                    attack_info = attack_explanations[attack_name]
-                    response = f'<div class="section-header">🔍 {attack_name}</div>\n\n'
-                    response += f'<div class="info-box">'
-                    response += f'<div class="section-header">📝 Description</div>'
-                    response += f'<div class="info-list-item">{attack_info["description"]}</div>'
-                    response += '</div>\n\n'
-                    
-                    response += '<div class="section-header">📚 Details</div>'
-                    for section, content in attack_info['details'].items():
-                        response += f'<div class="info-box">'
-                        response += f'<div class="section-header">{section}</div>'
-                        response += f'<div class="info-list-item">{content}</div>'
-                        response += '</div>\n\n'
-                    
-                    response += '<div class="fancy-divider"></div>'
-                    
-                    response += '<div class="section-header">💡 Interactive Elements</div>'
-                    response += '<div class="info-box">'
-                    response += '<div class="info-list-item">• Click "Show Prevention" for protection tips</div>'
-                    response += '<div class="info-list-item">• Click "Show Example" for a detailed scenario</div>'
-                    response += '<div class="info-list-item">• Click "Show Impact" for potential consequences</div>'
-                    response += '</div>'
-                    
-                    return response
-            return "I can explain different types of network attacks. Just ask me to 'explain' followed by the attack type (e.g., 'explain CDP Attack' or 'explain DHCP Attack')."
-        else:
-            return "I'm here to help with network security. You can ask me to 'explain' different attack types or request tips for protection."
-
-# Function to render interactive explanation
-def render_interactive_explanation(attack_name):
-    if attack_name in attack_explanations:
-        attack_info = attack_explanations[attack_name]
-        
-        # Create columns for interactive elements
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            if st.button("🛡️ Show Prevention", key=f"prevent_{attack_name}"):
-                st.markdown(
-                    f'<div class="info-box">'
-                    f'<div class="section-header">Prevention Tips</div>'
-                    f'<div class="info-list-item">' + 
-                    '</div><div class="info-list-item">'.join([f"• {tip}" for tip in attack_info.get("prevention", [])]) +
-                    f'</div></div>',
-                    unsafe_allow_html=True
-                )
-        
-        with col2:
-            if st.button("📋 Show Example", key=f"example_{attack_name}"):
-                st.markdown(
-                    f'<div class="info-box">'
-                    f'<div class="section-header">Real-world Example</div>'
-                    f'<div class="info-list-item">{attack_info["details"]["Real-world example"]}</div>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-        
-        with col3:
-            if st.button("⚠️ Show Impact", key=f"impact_{attack_name}"):
-                st.markdown(
-                    f'<div class="info-box">'
-                    f'<div class="section-header">Impact Analysis</div>'
-                    f'<div class="info-list-item">{attack_info["details"]["Impact"]}</div>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-        
-        # Add fancy divider
-        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
-
-# Update the chat display section
-def display_chat_message(message):
-    if message["role"] == "user":
-        st.markdown(
-            f'<div class="chat-message user-message">'
-            f'<span class="chat-avatar">🧑</span>'
-            f'<b>You:</b> {message["content"]}</div>',
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f'<div class="chat-message bot-message">'
-            f'<span class="chat-avatar">🤖</span>'
-            f'<b>Bot:</b> {message["content"]}</div>',
-            unsafe_allow_html=True
-        )
-        
-        # Check if the message contains an attack explanation
-        for attack_name in attack_explanations.keys():
-            if attack_name in message["content"]:
-                render_interactive_explanation(attack_name)
-
-# Update the chat history display
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-for message in st.session_state.chat_history:
-    display_chat_message(message)
-st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Glassmorphism Form Box ---
 st.markdown('<div class="glass-box">', unsafe_allow_html=True)
@@ -699,105 +594,88 @@ with st.form("prediction_form"):
 
     submitted = st.form_submit_button("Predict Protocol Type")
 
+# --- State for which info box to show ---
+if 'show_info_box' not in st.session_state:
+    st.session_state.show_info_box = None
+if 'last_attack_name' not in st.session_state:
+    st.session_state.last_attack_name = None
+
 # Handle form submission
 if submitted:
-    if (
-        protocol == "Select Protocol"
-        or source_type == "Select Source Type"
-        or destination_type == "Select Destination Type"
-    ):
-        st.error("Please fill out all the fields correctly.")
-    else:
-        data = CustomData(
-            no=no,
-            time=time,
-            protocol=protocol,
-            length=length,
-            source_type=source_type,
-            destination_type=destination_type,
+    st.session_state.show_info_box = None  # Reset info box on new prediction
+    data = CustomData(
+        no=no,
+        time=time,
+        protocol=protocol,
+        length=length,
+        source_type=source_type,
+        destination_type=destination_type,
+    )
+    pred_df = data.get_data_as_data_frame()
+    predict_pipeline = PredictPipeline()
+    st.write("Starting Prediction...")
+    try:
+        results = predict_pipeline.predict(pred_df)
+        pred_class = float(results[0])
+        if pred_class in attack_info_dict:
+            label, tips, _ = attack_info_dict[pred_class]
+            st.markdown(f'<div class="success">Prediction: {label}</div>', unsafe_allow_html=True)
+            # Generate and play audio for the prediction
+            tts = gTTS(text=f"The prediction is {label}", lang='en')
+            audio_file = "prediction_audio.mp3"
+            tts.save(audio_file)
+            st.audio(audio_file, format="audio/mp3")
+            # Save attack name in session state for use after form
+            attack_name = label.split(' ', 1)[-1] if ' ' in label else label
+            st.session_state.last_attack_name = attack_name
+        else:
+            st.warning("⚠️ Unknown prediction result.")
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {e}")
+
+# --- After prediction, outside the form ---
+attack_name = st.session_state.get('last_attack_name')
+attack_info = attack_explanations.get(attack_name) if attack_name else None
+if attack_info:
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("🛡️ Show Prevention", key=f"prevent_{attack_name}"):
+            st.session_state.show_info_box = 'prevention'
+    with col2:
+        if st.button("📋 Show Example", key=f"example_{attack_name}"):
+            st.session_state.show_info_box = 'example'
+    with col3:
+        if st.button("⚠️ Show Impact", key=f"impact_{attack_name}"):
+            st.session_state.show_info_box = 'impact'
+
+    # Show the selected info box after the buttons
+    if st.session_state.get('show_info_box') == 'prevention':
+        tips = attack_info.get("prevention", [])
+        st.markdown(
+            f'<div class="info-box">'
+            f'<div class="section-header">Prevention Tips</div>'
+            f'<div class="info-list-item">' +
+            '</div><div class="info-list-item">'.join([f"• {tip}" for tip in tips]) +
+            f'</div></div>',
+            unsafe_allow_html=True
         )
-
-        pred_df = data.get_data_as_data_frame()
-
-        predict_pipeline = PredictPipeline()
-        st.write("Starting Prediction...")
-        try:
-            results = predict_pipeline.predict(pred_df)
-            pred_class = float(results[0])
-
-            if pred_class in attack_info_dict:
-                label, tips, _ = attack_info_dict[pred_class]
-                st.markdown(f'<div class="success">Prediction: {label}</div>', unsafe_allow_html=True)
-                
-                # Generate and play audio for the prediction
-                tts = gTTS(text=f"The prediction is {label}", lang='en')
-                audio_file = "prediction_audio.mp3"
-                tts.save(audio_file)
-                st.audio(audio_file, format="audio/mp3")
-
-                # Add prediction to chat history
-                st.session_state.chat_history.append({"role": "assistant", "content": f"Prediction: {label}"})
-                
-                # Get chatbot response for the prediction
-                bot_response = get_chatbot_response("", pred_class)
-                st.session_state.chat_history.append({"role": "assistant", "content": bot_response})
-            else:
-                st.warning("⚠️ Unknown prediction result.")
-        except Exception as e:
-            st.error(f"An error occurred during prediction: {e}")
-st.markdown('</div>', unsafe_allow_html=True)  # Close glass-box
+    elif st.session_state.get('show_info_box') == 'example':
+        st.markdown(
+            f'<div class="info-box">'
+            f'<div class="section-header">Real-world Example</div>'
+            f'<div class="info-list-item">{attack_info["details"]["Real-world example"]}</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+    elif st.session_state.get('show_info_box') == 'impact':
+        st.markdown(
+            f'<div class="info-box">'
+            f'<div class="section-header">Impact Analysis</div>'
+            f'<div class="info-list-item">{attack_info["details"]["Impact"]}</div>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
 
 # --- Divider ---
 st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
-# --- Glassmorphism Chat Box ---
-st.markdown('<div class="glass-box">', unsafe_allow_html=True)
-st.markdown('<div class="form-title">Chat with Security Assistant</div>', unsafe_allow_html=True)
-
-# Display chat history with avatars
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-for message in st.session_state.chat_history:
-    if message["role"] == "user":
-        st.markdown(
-            f'<div class="chat-message user-message">'
-            f'<span class="chat-avatar">🧑</span>'
-            f'<b>You:</b> {message["content"]}</div>',
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f'<div class="chat-message bot-message">'
-            f'<span class="chat-avatar">🤖</span>'
-            f'<b>Bot:</b> {message["content"]}</div>',
-            unsafe_allow_html=True
-        )
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Check if last bot message was a gratitude response
-hide_send = False
-gratitude_keywords = ["you're welcome", "glad i could help", "anytime!"]
-if st.session_state.chat_history:
-    last_msg = st.session_state.chat_history[-1]
-    if last_msg["role"] == "assistant" and any(x in last_msg["content"].lower() for x in gratitude_keywords):
-        hide_send = True
-
-# Only show input and send button if not hiding
-def render_chat_input():
-    st.markdown('<div class="chat-input-row">', unsafe_allow_html=True)
-    user_input = st.text_input("Type your message here...", key=f"chat_input_{st.session_state.chat_input_key}")
-    send_col, _ = st.columns([1, 5])
-    with send_col:
-        if st.button("Send", key="send_btn", help="Send your message to the assistant"):
-            if user_input:
-                st.session_state.chat_history.append({"role": "user", "content": user_input})
-                bot_response = get_chatbot_response(user_input)
-                st.session_state.chat_history.append({"role": "assistant", "content": bot_response})
-                # Increment key to clear input
-                st.session_state.chat_input_key += 1
-                st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-if not hide_send:
-    render_chat_input()
-
-st.markdown('</div>', unsafe_allow_html=True)  # Close glass-box
